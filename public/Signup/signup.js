@@ -21,8 +21,8 @@ signUpForm.addEventListener('submit',(e)=>{
     }
     axios.post(`${baseURL}/user/signup`,useraData)
     .then((res)=>{
-        console.log(res.data.message)
-        alert(res.data.message)
+        localStorage.setItem("token",res.data.token)
+        alert(res.data.message);
     })
     .catch((err)=>{
         alert(err.response.data.message)

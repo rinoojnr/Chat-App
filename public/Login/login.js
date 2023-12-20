@@ -12,9 +12,11 @@ loginForm.addEventListener('submit',(e)=>{
     }
     axios.post(`${baseURL}/user/login`,userData)
     .then((res)=>{
+        localStorage.setItem("token",res.data.token)
         alert(res.data.message)
     })
     .catch((err)=>{
+        console.log(err)
         alert(err.response.data.message)
     })
 })

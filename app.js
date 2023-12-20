@@ -2,12 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
+// const dotenv = require('dotenv');
 
 const signupRouter = require('./routes/signup');
 
 const app = express();
 
-app.use(cors());
+// dotenv.config();
+
+
+app.use(cors({
+    origin: "*",
+    // method: ["POST"]
+}));
 app.use(bodyParser.json())
 
 app.use(signupRouter);
