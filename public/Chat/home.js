@@ -1,6 +1,6 @@
 const notification = document.getElementById('notification-div');
 const usersDetailes = document.getElementById('users-detailes-div');
-const chatView = document.getElementById('chat-div"');
+const chatView = document.getElementById('chat-div');
 const chatBox = document.getElementById('chat');
 const sendButton = document.getElementById('send');
 
@@ -9,9 +9,17 @@ const baseURL = `http://localhost:3001`;
 
 window.addEventListener('DOMContentLoaded',()=>{
     const token = localStorage.getItem('token');
-    axios.get(`${baseURL}/home/chat`,{headers: {"Authentication": token}})
+    axios.get(`${baseURL}/home/chats`,{headers: {"Authentication":token}})
     .then((res)=>{
         console.log(res)
+        let chatviewInner =``;
+        for(let i=0;i<res.data.chats.length;i++){
+            chatviewInner+=`<li>`+ res.data.chats[i].userName + `:` + res.data.chats[i].chat +`</li>`;
+        }
+        document.getElementById('chat-div').innerHTML = chatviewInner;
+    })
+    axios.get(`${baseURL}/home/chatusers`,{headers: {"Authentication": token}})
+    .then((res)=>{
         // if(res.data.isAlive=false){
         //     alert("Session timeout")
         //     window.location.href = '../Login/login.html'
