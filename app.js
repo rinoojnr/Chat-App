@@ -4,7 +4,11 @@ const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
 // const dotenv = require('dotenv');
 
+const User = require('./models/signup');
+const Chat = require('./models/chat');
+
 const signupRouter = require('./routes/signup');
+const chatRouter = require('./routes/chat');
 
 const app = express();
 
@@ -18,10 +22,14 @@ app.use(cors({
 app.use(bodyParser.json())
 
 app.use(signupRouter);
+app.use(chatRouter);
+
+User.hasMany(Chat);
+Chat.belongsTo(User)
 
 
 sequelize.sync()
 .then(()=>{
-    app.listen(3000,()=>console.log("listen to the port 3000"));
+    app.listen(3001,()=>console.log("listen to the port 3000"));
 })
 .catch((err)=>console.log(err,"sequelize error"))

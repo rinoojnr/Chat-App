@@ -4,28 +4,35 @@ const chatView = document.getElementById('chat-div"');
 const chatBox = document.getElementById('chat');
 const sendButton = document.getElementById('send');
 
-const baseURL = `http://localhost:3000`;
+const baseURL = `http://localhost:3001`;
 
 
 window.addEventListener('DOMContentLoaded',()=>{
     const token = localStorage.getItem('token');
     axios.get(`${baseURL}/home/chat`,{headers: {"Authentication": token}})
     .then((res)=>{
-        if(res.data.isAlive=false){
-            alert("Session timeout")
-            window.location.href = '../Login/login.html'
-        }else{
-            let loginDetailes = ``;
-            loginDetailes+= `<h4> You are joined </h4>`;
-            for(let i=0;i<res.data.users.length;i++){
-                loginDetailes+= `<p>`+ res.data.users[i] +` joined<p>`
-            }
-            document.getElementById('users-detailes-div').innerHTML = loginDetailes;
+        console.log(res)
+        // if(res.data.isAlive=false){
+        //     alert("Session timeout")
+        //     window.location.href = '../Login/login.html'
+        // }else{
+        //     let loginDetailes = ``;
+        //     loginDetailes+= `<h4> You are joined </h4>`;
+        //     for(let i=0;i<res.data.users.length;i++){
+        //         loginDetailes+= `<p>`+ res.data.users[i] +` joined<p>`
+        //     }
+        //     document.getElementById('users-detailes-div').innerHTML = loginDetailes;
+        // }
+        let loginDetailes = ``;
+        loginDetailes+= `<h4> You are joined </h4>`;
+        for(let i=0;i<res.data.users.length;i++){
+            loginDetailes+= `<p>`+ res.data.users[i].username +` joined<p>`
         }
+        document.getElementById('users-detailes-div').innerHTML = loginDetailes;
         
     })
     .catch((err)=>{
-        console.log(err)
+        console.log("tutu")
     })
 })
 
@@ -37,6 +44,7 @@ sendButton.addEventListener('click',(e)=>{
         chat:chatBox.value
     }
     const token = localStorage.getItem('token');
+    console.log(chatData)
     axios.post(`${baseURL}/home/chat`,chatData,{headers: {"Authentication": token}})
     .then((res)=>{
         console.log(res,".....")

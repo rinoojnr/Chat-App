@@ -5,7 +5,7 @@ const userPassword = document.getElementById('user-password');
 const userConfirmPassword = document.getElementById('user-confirm-password');
 const signUpForm = document.getElementById('signup-form');
 
-const baseURL = `http://localhost:3000`
+const baseURL = `http://localhost:3001`
 
 
 
