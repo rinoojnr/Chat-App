@@ -23,6 +23,7 @@ signUpForm.addEventListener('submit',(e)=>{
     .then((res)=>{
         localStorage.setItem("token",res.data.token)
         alert(res.data.message);
+        window.location.href = '../Login/login.html'
     })
     .catch((err)=>{
         alert(err.response.data.message)

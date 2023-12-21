@@ -14,6 +14,7 @@ loginForm.addEventListener('submit',(e)=>{
     .then((res)=>{
         localStorage.setItem("token",res.data.token)
         alert(res.data.message)
+        window.location.href = "../Chat/home.html";
     })
     .catch((err)=>{
         console.log(err)
