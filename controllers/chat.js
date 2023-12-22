@@ -8,7 +8,7 @@ exports.getUsers = async(req,res) =>{
         if(req.user.id === userData[i].id){
             continue;
         }
-        usersName.push({username: userData[i].username})
+    usersName.push({username: userData[i].username})
     }
     res.status(200).json({success:true,message:"users list",users: usersName})
 }

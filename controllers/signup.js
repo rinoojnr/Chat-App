@@ -7,6 +7,9 @@ exports.signUp = async(req,res) =>{
     try{
         const lengthPhoneNumber = req.body.userphone.length;
         const lengthPassword = JSON.stringify(req.body.userpassword).length-2;
+        if(!req.body.username){
+            throw new Error("Please Enter All The Detailes")
+        }
 
         if(lengthPhoneNumber != 10 ){
             throw new Error("Phone number is invalid")
@@ -38,7 +41,7 @@ exports.signUp = async(req,res) =>{
 }
 
 function authentication (id,username,isAlive){
-        return jwt.sign({id: id,userName: username,isAlive: isAlive},"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c",{expiresIn:"1800s"})
+        return jwt.sign({id: id,userName: username,isAlive:isAlive},"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c",{expiresIn:"1800s"})
     
 }
 

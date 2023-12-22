@@ -4,7 +4,8 @@ const loginForm = document.getElementById('login-form');
 
 const baseURL = `http://localhost:3001`;
 
-loginForm.addEventListener('submit',(e)=>{
+loginForm.addEventListener('click',(e)=>{
+    console.log("jj")
     e.preventDefault();
     const userData = {
         usernumber: userNumber.value,

@@ -10,7 +10,7 @@ const baseURL = `http://localhost:3001`
 
 
 
-signUpForm.addEventListener('submit',(e)=>{
+signUpForm.addEventListener('click',(e)=>{
     e.preventDefault();
     const useraData ={
         username: userName.value,
