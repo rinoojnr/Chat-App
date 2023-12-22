@@ -7,9 +7,6 @@ const signUpForm = document.getElementById('signup-form');
 
 const baseURL = `http://localhost:3001`
 
-
-
-
 signUpForm.addEventListener('click',(e)=>{
     e.preventDefault();
     const useraData ={
