@@ -10,6 +10,6 @@ router.get('/home/chatusers',authenticationMiddileware.authentication,chatContro
 router.post('/home/chat',authenticationMiddileware.authentication,chatController.postChats);
 router.get('/home/chats',authenticationMiddileware.authentication,chatController.getChats);
 router.get('/home/newchats',chatController.getNewChats)
-router.get('home/lastchats',chatController.getLast10Chats)
+router.get('/home/lastchats',chatController.getLast10Chats)
 
 module.exports = router;

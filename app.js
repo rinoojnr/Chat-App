@@ -6,9 +6,11 @@ const sequelize = require('./util/database');
 
 const User = require('./models/signup');
 const Chat = require('./models/chat');
+const Groups = require('./models/group');
 
 const signupRouter = require('./routes/signup');
 const chatRouter = require('./routes/chat');
+const groupRouter = require('./routes/group');
 
 const app = express();
 
@@ -16,16 +18,21 @@ const app = express();
 
 
 app.use(cors({
-    origin: "*",
+    origin: "*",    
     // method: ["POST"]
 }));
 app.use(bodyParser.json())
 
 app.use(signupRouter);
 app.use(chatRouter);
+app.use(groupRouter);
 
 User.hasMany(Chat);
-Chat.belongsTo(User)
+Chat.belongsTo(User);
+
+
+User.hasMany(Groups);
+Groups.belongsTo(User);
 
 
 sequelize.sync()

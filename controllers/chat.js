@@ -2,6 +2,7 @@ const Sequelize = require('sequelize')
 
 const User = require('../models/signup');
 const Chats = require('../models/chat');
+const Groups = require('../models/group');
 
 const Op = require('sequelize');
 
@@ -15,12 +16,15 @@ exports.getUsers = async(req,res) =>{
         }
     usersName.push({username: userData[i].username})
     }
-    res.status(200).json({success:true,message:"users list",users: usersName})
+    const groupsIncluded = await myGroups(req.user.id);
+    res.status(200).json({success:true,message:"users list",users: usersName,groups:groupsIncluded})
 }
 
 exports.postChats = async(req,res) =>{
     console.log(req.user)
-    await Chats.create({chat: req.body.chat,userId: req.user.id})
+    const chats = await Chats.create({chat: req.body.chat,userId: req.user.id});
+    const user = await User.findOne({where: {id: chats.userId}})
+    res.status(200).json({success:true,message:"message sended",chat: {userName: user.username,chat:chats.chat,chatId:chats.id}})
 }
 
 exports.getChats = async(req,res) =>{
@@ -65,4 +69,15 @@ exports.getNewChats = async(req,res) =>{
         chats.push({ userName:userName.username,chat: latestChats[i].chat,chatId:latestChats[i].id })
     }
     res.json({success:true,message: "latest chats",chats: chats})
+}
+
+
+
+async function myGroups(id){
+    const groupsIncluded = await Groups.findAll({where: {userId: id}});
+    const groupsIncludedName = [];
+    for(let i=0;i<groupsIncluded.length;i++){
+        groupsIncludedName.push(groupsIncluded[i].groupname)
+    }
+    return (groupsIncludedName)
 }
