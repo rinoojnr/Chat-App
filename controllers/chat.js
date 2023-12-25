@@ -3,6 +3,7 @@ const Sequelize = require('sequelize')
 const User = require('../models/signup');
 const Chats = require('../models/chat');
 const Groups = require('../models/group');
+const GroupMember = require('../models/groupmember');
 
 const Op = require('sequelize');
 
@@ -28,30 +29,33 @@ exports.postChats = async(req,res) =>{
 }
 
 exports.getChats = async(req,res) =>{
-    const chats = await Chats.findAll();
-    const noOfchats = chats.length;
-    const chatList = []
-    for(let i=0;i<noOfchats;i++){
+        const chats = await Chats.findAll();
+        const noOfchats = chats.length;
+        const chatList = []
+        for(let i=0;i<noOfchats;i++){
         const userName = await User.findOne({where: {id: chats[i].userId}});
         chatList.push({userName: userName.username,chat:chats[i].chat,chatId:chats[i].id})
-    }
-    res.status(200).json({success: true,message: "user messages",chats: chatList})
+        }
+        res.status(200).json({success: true,message: "user messages",chats: chatList})
+    
 }
 
 
 exports.getLast10Chats = async(req,res) =>{
-    const lastTenChats = await Chats.findAll({
-        order: [
-            ['createdAt','DESC']
-        ],
-        limit: 10
-    })
-    const chats = [];
-    for(let i=9;i>=0;i--){
-        const userName = await User.findOne({where: {id: lastTenChats[i].userId}})
-        chats.push({userName: userName.username,chat: lastTenChats[i].chat,chatId: lastTenChats[i].id})
-    }
-    res.json({success:true,message:"last 10 chats",chats: chats})
+        const lastTenChats = await Chats.findAll({
+            order: [
+                ['createdAt','DESC']
+            ],
+            limit: 10
+        })
+        const chats = [];
+        for(let i=lastTenChats.length-1;i>=0;i--){
+            const userName = await User.findOne({where: {id: lastTenChats[i].userId}})
+            chats.push({userName: userName.username,chat: lastTenChats[i].chat,chatId: lastTenChats[i].id})
+        }
+        res.json({success:true,message:"last 10 chats",chats: chats})
+    
+    
 }
 
 
@@ -74,10 +78,11 @@ exports.getNewChats = async(req,res) =>{
 
 
 async function myGroups(id){
-    const groupsIncluded = await Groups.findAll({where: {userId: id}});
+    const groupsIncluded = await GroupMember.findAll({where: {userId: id}});
     const groupsIncludedName = [];
     for(let i=0;i<groupsIncluded.length;i++){
-        groupsIncludedName.push(groupsIncluded[i].groupname)
+        let grp = await Groups.findOne({where: {id: groupsIncluded[i].groupId}})
+        groupsIncludedName.push({groupName:grp.groupname,groupId:groupsIncluded[i].groupId})
     }
     return (groupsIncludedName)
 }

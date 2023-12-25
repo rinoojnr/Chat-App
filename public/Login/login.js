@@ -2,7 +2,8 @@ const userNumber = document.getElementById('user-phone');
 const userPassword = document.getElementById('user-password');
 const loginForm = document.getElementById('login-form');
 
-const baseURL = `http://localhost:3001`;
+const baseURL = `http://localhost:3000`;
+
 
 loginForm.addEventListener('click',(e)=>{
     console.log("jj")
