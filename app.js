@@ -3,6 +3,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
 
+const cronService = require('./services/crone');
+cronService.job.start()
+
 // const dotenv = require('dotenv');
 
 const User = require('./models/signup');
@@ -11,6 +14,7 @@ const Groups = require('./models/group');
 const GroupMember = require('./models/groupmember');
 const GroupChat = require('./models/groupchat');
 const Content = require('./models/content');
+// const Archived = require('./models/archivedchat');
 
 const signupRouter = require('./routes/signup');
 const chatRouter = require('./routes/chat');

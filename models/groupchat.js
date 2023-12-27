@@ -26,8 +26,6 @@ const GroupChat = sequelize.define('groupchat',{
             referencesKey: 'id'
         }
     }
-
-
 })
 
 

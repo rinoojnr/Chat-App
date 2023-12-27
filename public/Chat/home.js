@@ -202,8 +202,6 @@ function startgroupchatContent(groupId){
     .then((res)=>{
         let groupChatcontent = ``;
         for(let i=0;i<res.data.content.length;i++){
-
-            const month = ['Jan','Feb','Mar','Apr','May','jun','Jul','Aug','Sep','Oct','Nov','Des'];
             
             const dateString = res.data.content[i].createdAt;
             const date = new Date(dateString);
