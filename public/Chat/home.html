@@ -7,8 +7,62 @@
     <link rel="stylesheet" href="home.css">
 </head>
 <body>
-    <h1 align="center">ChatApp</h1>
-    <div id="main-container">
+    <div class="chat-app-container">
+        <header class="header-section">
+            <h1 align="center">ChatApp</h1>
+        </header>
+        <div class="body-section">
+            <div class="chat-section">
+                <div class="groups-container">
+                    <div class="groups-header">
+                        <div class="groups-header-text">Chats</div>
+                        <div class="create-group-container" id="group-creation">
+                            <button class="create-group-button" id="create-group">New group</button>
+                        </div>
+                    </div>
+                    <div class="groups-name-container">
+                        <div class="common-group">Common group</div>
+                        <div id="groups-name" class="group-list"></div>
+                    </div>
+
+
+
+                    <div id="main-container">
+                        <div id="notification-div"></div>
+                        <div id="users-detailes-div"></div>
+                        <div id="chat-div"></div>
+                    </div>
+
+                    
+                
+                    
+                </div>
+                <div class="chat-container" id="group-chat-box-main-container">
+                    <div class="chat-container-header">
+                        <div id="group-chat-title" class="chat-title-section"></div>
+                    </div>
+                    <div class="chat-body">
+                        <div id="group-chat-edit"></div>
+                        <div id="group-chat-message"></div>
+                        <div id="group-chat-box-image"></div>
+                        <div id="group-chat-box"></div>
+                    </div>
+                    
+                    
+                    
+                    <!-- <div id="group-chat-box-main-container">
+                        <div id="group-chat-title"></div>
+                        <div id="group-chat-edit"></div>
+                        <div id="group-chat-message"></div>
+                        <div id="group-chat-box-image"></div>
+                        <div id="group-chat-box"></div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div id="main-container">
         <div id="notification-div"></div>
         <div id="users-detailes-div"></div>
         <div id="chat-div"></div>
@@ -31,7 +85,8 @@
         <div id="group-chat-message"></div>
         <div id="group-chat-box-image"></div>
         <div id="group-chat-box"></div>
-    </div>
+    </div> -->
+
     <script src="home.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
 </body>

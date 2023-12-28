@@ -22,7 +22,6 @@ exports.getUsers = async(req,res) =>{
 }
 
 exports.postChats = async(req,res) =>{
-    console.log(req.user)
     const chats = await Chats.create({chat: req.body.chat,userId: req.user.id});
     const user = await User.findOne({where: {id: chats.userId}})
     res.status(200).json({success:true,message:"message sended",chat: {userName: user.username,chat:chats.chat,chatId:chats.id}})

@@ -1,5 +1,7 @@
 // import { io } from 'socket.io-client'
 
+// const e = require("cors");
+
 const notification = document.getElementById('notification-div');
 const usersDetailes = document.getElementById('users-detailes-div');
 const chatView = document.getElementById('chat-div');
@@ -7,7 +9,7 @@ const chatBox = document.getElementById('chat');
 const sendButton = document.getElementById('send');
 const createGroup = document.getElementById('create-group');
 
-const baseURL = `http://localhost:3000`;
+const baseURL = `http://localhost:3001`;
 
 // const socket = io("http://localhost:3000")
 
@@ -50,9 +52,6 @@ function createfunction(){
         document.getElementById('group-creation-popup').innerHTML = groupCreationPopupinner;
         showOnscreenGroups(res.data.groups)
     })
-
-
-
 }
 
 
@@ -184,7 +183,7 @@ function showimagebox(groupId){
     const checkBoxImage = document.getElementById('isImage');
     if(checkBoxImage.checked){
         let groupChatBox = ``;
-        groupChatBox+=`<input type="file" accept="image/png, image/jpeg" id="group-chat" requires>`+
+        groupChatBox+=`<input type="file" accept="image/*" id="group-chat" requires>`+
         `<button type="submit" id="send-group-message" onclick = "sendmessage(${groupId},${true})">SEND</button>`
         document.getElementById('group-chat-box').innerHTML = groupChatBox;
     }else{
@@ -219,11 +218,12 @@ function startgroupchatContent(groupId){
         const dateOnly = formattedDate.substring(0, 10); 
         const timeOnly = formattedDate.substring(11);
         
-            groupChatcontent+=`<li>`+ res.data.content[i].userName + ` -- `+ res.data.content[i].chatcontent +` -- `+ dateOnly + timeOnly+`</ li>`
+            // groupChatcontent+=`<li>`+ res.data.content[i].userName + ` -- `+ res.data.content[i].chatcontent +` -- `+ dateOnly + timeOnly+`</ li>`\
+            groupChatcontent+=`<li class="chat-content">`+ `<div class="chat-text">` + `<span>` + res.data.content[i].chatcontent + timeOnly + `<div class="chat-time">` + timeOnly + `</div>` + `</span>` + `<div>` + `</ li>`
         }
         document.getElementById('group-chat-message').innerHTML = groupChatcontent;
         let groupChatTitle = ``;
-        groupChatTitle+=`<p>`+ `<h2>`+ res.data.groupName +`</h2>`+ res.data.groupMembersLength+ `Members` +`</p>`+ `<button type="submit" id="edit" onclick ="editGroup(${groupId})">Edit</button>`;
+        groupChatTitle+=`<div class="chat-title">`+ `<div>`+ res.data.groupName +`</div>`+ `<div>` + res.data.groupMembersLength + `Members` + `</div>` +`</div>`+ `<div class="edit-button">` + `<button type="submit" id="edit" onclick ="editGroup(${groupId})">Edit</button>` + `</div>`;
         document.getElementById('group-chat-title').innerHTML = groupChatTitle;
         
     })
@@ -236,16 +236,80 @@ function sendmessage(groupId,isImage){
     axios.post(`${baseURL}/home/group/sendmessage`,{groupId: groupId,content: groupChatContent,isImage:isImage},{headers: {"Authentication": token}})
     .then((res)=>{
         startgroupchatContent(res.data.groupId)
+        const groupChatContent = document.getElementById('group-chat').value = ""
     })
 }
 
 
 
-// function editGroup(groupId){
-//     const token = localStorage.getItem('token');
-//     console.log(token)
-//     axios.post(`${baseURL}/home/group/edit`,{headers: {"Authentication": token}})
-//     // let editInner = ``;
-//     // editInner+=`ss`
-//     // document.getElementById('group-chat-edit').innerHTML = editInner;
-// }
+async function editGroup(groupId){
+    const token = localStorage.getItem('token');
+    await axios.get(`${baseURL}/home/group/information?groupId=${groupId}`,{headers: {"Authentication":token}})
+    .then(async(response)=>{
+        const groupName = JSON.stringify(response.data.groupName);
+        await axios.get(`${baseURL}/home/group/create`,{headers: {"Authentication":token}})
+        .then((res)=>{
+            let groupEditPopupinner = ``;
+            groupEditPopupinner+=`<input type="text" id="group-name" value=${groupName} onchange="groupnamefunction()"><br>`
+            for(let i=0;i<res.data.users.length;i++){
+                if(response.data.groupMembers.includes(res.data.users[i].userId)){
+                    groupEditPopupinner+=`${res.data.users[i].userName}<input id="checkbox" type="checkbox" checked name="user" value=${res.data.users[i].userId}><br>`
+                }else{
+                    groupEditPopupinner+=`${res.data.users[i].userName}<input id="checkbox" type="checkbox" name="user" value=${res.data.users[i].userId}><br>`
+                }
+            }
+            groupEditPopupinner+=`<button id="closebutton" type="submit" onclick="closeEditfunction()">Close</button>`
+            document.getElementById('group-chat-edit').innerHTML = groupEditPopupinner;
+            const groupnameValue = document.getElementById('group-name').value;
+            groupEditPopupinner+=`<button id="createbutton" type="submit" onclick="updateFunction(${groupId},'${res.data.users.length}')">Update</button>`
+            document.getElementById('group-chat-edit').innerHTML = groupEditPopupinner;
+            
+        })
+    
+        
+})
+}
+
+function closeEditfunction(){
+    let groupEditPopupinner = ``;
+    document.getElementById('group-chat-edit').innerHTML = groupEditPopupinner;
+}
+
+function updateFunction(groupId,length){
+    const token = localStorage.getItem('token');
+    const groupname = groupnamefunction()
+    const checkedUsers = checkedUser(length);
+    const uncheckedUsers = uncheckedUser(length);
+    axios.post(`${baseURL}/home/group/edit`,{groupId:groupId,groupname:groupname,checkedUsers:checkedUsers,unchecked: uncheckedUsers},{headers: {"Authentication":token}})
+    .then((res)=>{
+        alert(res.data.message)
+    })
+}
+
+function groupnamefunction(){
+    const groupnameValue = document.getElementById('group-name').value;
+    return(groupnameValue)
+}
+
+
+function checkedUser(length){
+    const checkBox = document.getElementsByName('user');
+    const checked = [];
+    for(i=0;i<length;i++){
+        if(checkBox[i].checked){
+            checked.push(checkBox[i].value)
+        }
+    }
+    return(checked)
+}
+function uncheckedUser(length){
+    const checkBox = document.getElementsByName('user');
+    const unchecked = [];
+    for(i=0;i<length;i++){
+        if(!checkBox[i].checked){
+            unchecked.push(checkBox[i].value)
+        }
+    }
+    return(unchecked)
+}
+

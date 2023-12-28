@@ -73,18 +73,28 @@ exports.sendGroupMessage = async(req,res) => {
         res.json({success:true,message:"message sent",groupId:req.body.groupId})
     }else{
         let grpMember = await GroupMember.findOne({where: {userId: req.user.id, groupId: req.body.groupId}})
-        const filename = `ChatApp-Images${req.user.id}/${new Date()}`;
-        console.log(req.body.content,"................///.....................///...................")
-        const fileUrl = await s3Service.uploadTos3(req.body.content,filename);
+        // const filename = `ChatApp-Images${req.user.id}/${new Date()}`;
+        // console.log(req.file,".................................................")
+        // const fileUrl = await s3Service.uploadTos3(req.body.content,filename);
+
+
+
+        const image = req.body.content;
+
+        const { GroupId } = req.body;
+        const filename = `chat-images/group${GroupId}/user${req.user.id}/${Date.now()}_${image}`;
+        const imageUrl = await s3Service.uploadToS3(image.buffer, filename)
+
+
         let content = await Content.create({
-            chatcontent: req.body.content
+            chatcontent: imageUrl
         })
         GroupChat.create({
             groupId: req.body.groupId,
             groupmemberId: grpMember.id,
             contentId: content.id
         })
-        res.json({success:true,message:"message sent",groupId:req.body.groupId,fileUrl})
+        res.json({success:true,message:"message sent",groupId:req.body.groupId,imageUrl})
     }
     
 }
@@ -98,7 +108,6 @@ exports.getGroupMessage = async(req,res) => {
         let message = grpMessages[i];
         let grpMember = await GroupMember.findOne({where:{id: message.groupmemberId}})
         let user = await User.findOne({where: {id: grpMember.userId}});
-        console.log(message)
         let content = await Content.findOne({where: {id: message.contentId}})
         messages.push({userName: user.username, chatcontent: content.chatcontent, createdAt: message.createdAt})
     }
@@ -106,30 +115,72 @@ exports.getGroupMessage = async(req,res) => {
 }
 
 exports.editGroup = async(req,res) =>{
-    console.log(req.query.groupId)
-    const group = await Groups.findOne({where: {id: req.query.groupId},attributes: ['owner']});
+    const group = await Groups.findOne({where: {id: req.body.groupId},attributes: ['owner']});
     if(req.user.id != group.owner){
         res.json({success:false,message:"only admin can edit the group"});
     }else{
         await Groups.update({groupname: req.body.groupname},{
                 where: {
-                    id:req.query.groupId
+                    id:req.body.groupId
                 }
             })
-            if(req.body.checked){
-                console.log(req.body.checked.userId,"//",req.query.groupId)
-                await GroupMember.create({groupId: req.query.groupId,userId: req.body.checked.userId});
+            if(req.body.checkedUsers.length>0){
+                for(let i=0;i<req.body.checkedUsers.length;i++){
+                    const userId = jwt.verify(req.body.checkedUsers[i],"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")
+                    const isMember = await GroupMember.findOne({where: {
+                        groupId: req.body.groupId,
+                        userId: userId
+                    }
+                    })
+                    if(!isMember){
+                        await GroupMember.create({groupId: req.body.groupId,userId: userId});
+                    }
+                }
+               
             }
 
             if(req.body.unchecked){
-                await GroupMember.destroy({where: {userId: req.body.unchecked.userId,groupId: req.query.groupId}})
+                for(let i=0;i<req.body.unchecked.length;i++){
+                    const userId = jwt.verify(req.body.unchecked[i],"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")
+                    const isMember = await GroupMember.findOne({where: {
+                        groupId: req.body.groupId,
+                        userId: userId
+                    }
+                    })
+                    if(isMember){
+                        await GroupMember.destroy({where: {userId: userId,groupId: req.body.groupId}})
+                    }
+                }
+                
             }
         
         
-        res.json({success:true,message:"admin can change the group"})
+        res.json({success:true,message:"Updated SuccessFully",Groups,check:req.body.checkedUsers})
     }
 }
 
+
+exports.getGroupInfo = async (req,res) =>{
+    const GroupInfo = await Groups.findOne({
+        where: {
+            id: req.query.groupId
+        }
+    })
+
+    const GroupMembers = await GroupMember.findAll({
+        where: {
+            groupId: req.query.groupId
+        },
+        attributes: ['userId']
+    })
+    let groupMembers = [];
+    for(let i=0;i<GroupMembers.length;i++){
+        const userId = GroupMembers[i].userId;
+        const encriptedUserId = jwt.sign(userId,"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")
+        groupMembers.push(encriptedUserId);
+    }
+    res.json({groupName: GroupInfo.groupname,groupMembers:groupMembers})
+}
 
 
 

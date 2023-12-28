@@ -2,11 +2,10 @@ const userNumber = document.getElementById('user-phone');
 const userPassword = document.getElementById('user-password');
 const loginForm = document.getElementById('login-form');
 
-const baseURL = `http://localhost:3000`;
+const baseURL = `http://localhost:3001`;
 
 
 loginForm.addEventListener('click',(e)=>{
-    console.log("jj")
     e.preventDefault();
     const userData = {
         usernumber: userNumber.value,
@@ -19,7 +18,6 @@ loginForm.addEventListener('click',(e)=>{
         window.location.href = "../Chat/home.html";
     })
     .catch((err)=>{
-        console.log(err)
         alert(err.response.data.message)
     })
 })
