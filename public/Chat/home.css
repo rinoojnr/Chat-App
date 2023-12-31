@@ -50,6 +50,10 @@ body {
     display: flex;
 }
 
+.groups-container {
+    width: 40%;
+}
+
 .create-group-button {
     width: 30%;
     height: 30%;
@@ -115,6 +119,9 @@ body {
 
 .chat-body {
     background-color: rgb(233, 232, 232);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .chat-content {
@@ -123,10 +130,20 @@ body {
 
 }
 
-.chat-text {
-    /* text-align: center; */
+.chat-text, .owner-chat-text {
     display: flex;
     justify-content: center;
+    font-size: 15px;
+}
+
+.owner-chat-text span {
+    background-color: rgb(242, 245, 242);
+    border-radius: 20px;
+    display: flex;
+    padding: 13px;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .chat-text span {
@@ -135,15 +152,288 @@ body {
     display: flex;
     padding: 13px;
     justify-content: space-between;
-    /* padding: 10px; */
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-section-container {
+    display: flex;
+    justify-content: space-between;
 }
 
 .chat-time {
     padding-bottom: 0px;
-    font-size: 12px;;
+    font-size: 12px;
     color: gray;
     margin-bottom: 0px;
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
+    align-items: flex-end;
 }
+
+.chat-name-section {
+    color: gray;
+    font-size: 12px;
+}
+
+.chat-date-scection {
+    justify-content: flex-end;
+    display: flex;
+    color: gray;
+    font-size: 12px;
+}
+
+.message-container {
+    height: 87%;
+}
+
+.chat-conten-fieldt {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.group-chat-box {
+    display: flex;
+    height: 60%;
+    border-radius: 10px;
+}
+
+.chat-input-field {
+    width: 80%;
+    outline: none !important;
+    border: none !important;
+}
+
+.chat-send-button {
+    width: 20%;
+}
+
+.chat-typing-container {
+    height: 13%;
+}
+
+.group-chat-box-image {
+    height: 40%;
+}
+
+.chat-send-button {
+    outline: none !important;
+    border: none !important;
+    cursor: pointer;
+}
+
+.image-send-button {
+    width: 10%;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left-width: 1px;
+    cursor: pointer;
+}
+
+.image-send-buttons-subsection {
+    display: flex;
+    gap: 20px;
+    width: 80%;
+    margin: auto;
+}
+
+.btn-send {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    opacity: 0.8;
+    border-radius: 10px;
+}
+
+.choose-file-input {
+    padding: 30px;
+}
+
+.create-groups {
+    height: 40%;
+    margin: auto;
+    border: none;
+    border-radius: 10px;
+    width: 80%;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+.overlay-button-container {
+    display: flex;
+    gap: 10px;
+    width: 70%;
+    margin: auto;
+}
+
+.overlay-button-maincontainer {
+    width: 100%;
+    display: flex;
+}
+
+.group-creation-popup {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+
+
+
+.open-button {
+    background-color: #555;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+    position: fixed;
+    bottom: 23px;
+    right: 28px;
+    width: 280px;
+  }
+  
+  /* The popup form - hidden by default */
+  .form-popup {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    /* right: 15px; */
+    border: 3px solid #f1f1f1;
+    z-index: 9;
+    left: 860px
+  }
+  
+  /* Add styles to the form container */
+  .form-container {
+    max-width: 300px;
+    padding: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+  
+  /* Full-width input fields */
+  .form-container input[type=text], .form-container input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    border: none;
+    background: #f1f1f1;
+  }
+  
+  /* When the inputs get focus, do something */
+  .form-container input[type=text]:focus, .form-container input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+  
+  /* Set a style for the submit/login button */
+  .form-container .btn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom:10px;
+    opacity: 0.8;
+  }
+  
+  /* Add a red background color to the cancel button */
+  .form-container .cancel {
+    background-color: red;
+    border-radius: 10px;
+  }
+  
+  /* Add some hover effects to buttons */
+  .form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .overlay-subsection {
+    height: 100%;
+    display: flex;
+  }
+  .overlay:target {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .popup {
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 30%;
+    position: relative;
+    transition: all 5s ease-in-out;
+  }
+  
+  .popup h2 {
+    margin-top: 0;
+    color: #333;
+    font-family: Tahoma, Arial, sans-serif;
+  }
+  .popup .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+  }
+  .popup .close:hover {
+    color: #06D85F;
+  }
+  .popup .content {
+    max-height: 30%;
+    overflow: auto;
+  }
+  
+  @media screen and (max-width: 700px){
+    .box{
+      width: 70%;
+    }
+    .popup{
+      width: 70%;
+    }
+  }

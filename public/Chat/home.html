@@ -16,8 +16,21 @@
                 <div class="groups-container">
                     <div class="groups-header">
                         <div class="groups-header-text">Chats</div>
-                        <div class="create-group-container" id="group-creation">
-                            <button class="create-group-button" id="create-group">New group</button>
+                        <div class="create-group-container" id="group-creation" >
+                            <button class="create-groups">
+                                <a class="create-group-button" id="create-group" href="#popup1" >New group</a>
+                            </button>
+                        </div>
+
+                        <div id="popup1" class="overlay">
+                            <div class="overlay-subsection">
+                                <div class="popup" >
+                                    <h2>Here i am</h2>
+                                    <a class="close" href="#">&times;</a>     
+                                    <div id="group-creation-popup" class="group-creation-popup"></div>
+                               
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="groups-name-container">
@@ -43,9 +56,21 @@
                     </div>
                     <div class="chat-body">
                         <div id="group-chat-edit"></div>
-                        <div id="group-chat-message"></div>
-                        <div id="group-chat-box-image"></div>
-                        <div id="group-chat-box"></div>
+                        <div id="group-chat-message" class="message-container"></div>
+                        <div class="chat-typing-container">
+                            <div id="group-chat-box-image" class="group-chat-box-image"></div>
+                            <div id="group-chat-box" class="group-chat-box">
+                                <!-- <div>
+
+                                </div> -->
+                            </div>
+                            <div class="form-popup" id="myForm">
+                                <div id="image-popup" action="/action_page.php" class="form-container">
+                                  
+                                  
+                                </div>
+                              </div>
+                        </div>
                     </div>
                     
                     
@@ -86,8 +111,9 @@
         <div id="group-chat-box-image"></div>
         <div id="group-chat-box"></div>
     </div> -->
-
-    <script src="home.js"></script>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+    <script src="home.js"></script>
+    
 </body>
 </html>

@@ -1,10 +1,23 @@
 const io = require('socket.io')(3000,{
     cors: {
-        origin: ["http://localhost:3000"],
+        origin: "*",
     },
 });
 
-
-io.on("connection",socket =>{
-    console.log(socket.io)
+io.on('connection',socket=>{
+    socket.on('group-chat-send', (groupId)=> {
+        socket.broadcast.emit('group-message',groupId);
+    })
 })
+
+
+
+const socketService = (socket) => {
+    socket.on('common-chat-send', ()=> {
+        
+            socket.broadcast.emit('common-chat');
+    })
+    socket.on('group-chat-send', (groupId)=> {
+        socket.broadcast.emit('group-message',groupId);
+    })
+  }

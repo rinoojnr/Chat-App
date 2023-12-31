@@ -4,9 +4,9 @@ const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
 
 const cronService = require('./services/crone');
+const webSocket = require('./server');
 cronService.job.start()
 
-// const dotenv = require('dotenv');
 
 const User = require('./models/signup');
 const Chat = require('./models/chat');
@@ -14,7 +14,7 @@ const Groups = require('./models/group');
 const GroupMember = require('./models/groupmember');
 const GroupChat = require('./models/groupchat');
 const Content = require('./models/content');
-// const Archived = require('./models/archivedchat');
+
 
 const signupRouter = require('./routes/signup');
 const chatRouter = require('./routes/chat');
@@ -22,12 +22,9 @@ const groupRouter = require('./routes/group');
 
 const app = express();
 
-// dotenv.config();
-
 
 app.use(cors({
     origin: "*",    
-    // method: ["POST"]
 }));
 app.use(bodyParser.json())
 
@@ -40,8 +37,6 @@ User.hasMany(Chat);
 Chat.belongsTo(User);
 
 
-// User.hasMany(Groups);
-// Groups.belongsTo(User);
 User.hasMany(GroupMember)
 GroupMember.belongsTo(User)
 

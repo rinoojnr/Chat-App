@@ -13,7 +13,9 @@ loginForm.addEventListener('click',(e)=>{
     }
     axios.post(`${baseURL}/user/login`,userData)
     .then((res)=>{
-        localStorage.setItem("token",res.data.token) 
+        console.log(res)
+        localStorage.setItem("token",res.data.token);
+        localStorage.setItem("userName",res.data.userName);
         alert(res.data.message);
         window.location.href = "../Chat/home.html";
     })

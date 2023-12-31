@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const Op = require('sequelize');
 const Sequelize = require('sequelize');
-
+const dotenv = require('dotenv');
+dotenv.config();
 
 const User = require('../models/signup');
 const Groups = require('../models/group');
@@ -18,7 +19,7 @@ exports.getUsers = async(req,res) =>{
     }}})
     const users = [];
     for(let i=0;i<user.length;i++){
-        users.push({userName: user[i].username,userId: jwt.sign(user[i].id,"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")})
+        users.push({userName: user[i].username,userId: jwt.sign(user[i].id,process.env.JWT_SECRET)})
     }
   res.status(200).json({success:true,message:"group created",users: users})  
 }
@@ -36,7 +37,7 @@ exports.createGroup = async(req,res) =>{
     for(let i=0;i<numberOfUsers;i++){
         await GroupMember.create({
             groupId: grp.id,
-            userId: jwt.verify(req.body.members[i],'f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c')
+            userId: jwt.verify(req.body.members[i],process.env.JWT_SECRET)
         })
     }
     const groupsIncluded = await myGroups(req.user.id);
@@ -60,7 +61,6 @@ async function myGroups(id){
 
 
 exports.sendGroupMessage = async(req,res) => {
-    if(req.body.isImage === false){
         let grpMember = await GroupMember.findOne({where: {userId: req.user.id, groupId: req.body.groupId}})
         let content = await Content.create({
             chatcontent: req.body.content
@@ -71,18 +71,15 @@ exports.sendGroupMessage = async(req,res) => {
             contentId: content.id
         })
         res.json({success:true,message:"message sent",groupId:req.body.groupId})
-    }else{
-        let grpMember = await GroupMember.findOne({where: {userId: req.user.id, groupId: req.body.groupId}})
-        // const filename = `ChatApp-Images${req.user.id}/${new Date()}`;
-        // console.log(req.file,".................................................")
-        // const fileUrl = await s3Service.uploadTos3(req.body.content,filename);
+    }
 
+exports.sendGroupImage = async(req,res) =>{
+    let grpMember = await GroupMember.findOne({where: {userId: req.user.id, groupId: req.body.groupId}})
 
+        const image = req.file;
 
-        const image = req.body.content;
-
-        const { GroupId } = req.body;
-        const filename = `chat-images/group${GroupId}/user${req.user.id}/${Date.now()}_${image}`;
+        const { groupId } = req.body;
+        const filename = `chat-images/group${groupId}/user${req.user.id}/${Date.now()}_${image}`;
         const imageUrl = await s3Service.uploadToS3(image.buffer, filename)
 
 
@@ -94,10 +91,14 @@ exports.sendGroupMessage = async(req,res) => {
             groupmemberId: grpMember.id,
             contentId: content.id
         })
-        res.json({success:true,message:"message sent",groupId:req.body.groupId,imageUrl})
-    }
-    
+        res.json({success:true,message:"message sent",groupId:req.body.groupId})
 }
+        
+
+
+
+        
+
 
 exports.getGroupMessage = async(req,res) => {
     let grpMessages =await GroupChat.findAll({where: {groupId: req.query.groupId}})
@@ -126,7 +127,7 @@ exports.editGroup = async(req,res) =>{
             })
             if(req.body.checkedUsers.length>0){
                 for(let i=0;i<req.body.checkedUsers.length;i++){
-                    const userId = jwt.verify(req.body.checkedUsers[i],"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")
+                    const userId = jwt.verify(req.body.checkedUsers[i],process.env.JWT_SECRET)
                     const isMember = await GroupMember.findOne({where: {
                         groupId: req.body.groupId,
                         userId: userId
@@ -141,7 +142,7 @@ exports.editGroup = async(req,res) =>{
 
             if(req.body.unchecked){
                 for(let i=0;i<req.body.unchecked.length;i++){
-                    const userId = jwt.verify(req.body.unchecked[i],"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")
+                    const userId = jwt.verify(req.body.unchecked[i],process.env.JWT_SECRET)
                     const isMember = await GroupMember.findOne({where: {
                         groupId: req.body.groupId,
                         userId: userId
@@ -176,7 +177,7 @@ exports.getGroupInfo = async (req,res) =>{
     let groupMembers = [];
     for(let i=0;i<GroupMembers.length;i++){
         const userId = GroupMembers[i].userId;
-        const encriptedUserId = jwt.sign(userId,"f244c652502fdfa22f797cd8bea18894c943939899feb0f6b85cfba16d41e6419224d4894b9f622ae6a3ac2f3b7ef8cdf674f21ecb728c47f6276839f711244c")
+        const encriptedUserId = jwt.sign(userId,process.env.JWT_SECRET)
         groupMembers.push(encriptedUserId);
     }
     res.json({groupName: GroupInfo.groupname,groupMembers:groupMembers})

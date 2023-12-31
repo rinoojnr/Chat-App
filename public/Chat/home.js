@@ -2,18 +2,41 @@
 
 // const e = require("cors");
 
+
+
+
 const notification = document.getElementById('notification-div');
 const usersDetailes = document.getElementById('users-detailes-div');
 const chatView = document.getElementById('chat-div');
 const chatBox = document.getElementById('chat');
 const sendButton = document.getElementById('send');
 const createGroup = document.getElementById('create-group');
-
+const sendgrouoMessage = document.getElementById('send-group-message');
 const baseURL = `http://localhost:3001`;
+const socket = io('http://localhost:3000');
 
-// const socket = io("http://localhost:3000")
+// const socket = io(window.location.origin);
+
+
+
+
+
+socket.on("connect",()=>{
+    socket.on('common-chat', () => {
+        showOnscreenChats()
+    })
+
+    socket.on('group-message', (groupId) => {
+            console.log("``````````````",groupId)
+            startgroupchatContent(groupId)
+        })
+})
+
+
+
 
 createGroup.addEventListener('click',()=>{
+    console.log('===========')
     const token = localStorage.getItem('token');
     axios.get(`${baseURL}/home/group/create`,{headers: {"Authentication":token}})
     .then((res)=>{
@@ -22,16 +45,17 @@ createGroup.addEventListener('click',()=>{
         for(let i=0;i<res.data.users.length;i++){
             groupCreationPopupinner+=`${res.data.users[i].userName}<input id="checkbox" type="checkbox" name="user" value=${res.data.users[i].userId}><br>`
         }
-        groupCreationPopupinner+=`<button id="closebutton" type="submit" onclick="closefunction()">Close</button>`
-        groupCreationPopupinner+=`<button id="createbutton" type="submit" onclick="createfunction()">Create</button>`
+        groupCreationPopupinner+=`<div class="overlay-button-maincontainer">` + `<div class="overlay-button-container">` + `<button>` + `<a id="closebutton" type="submit" href="#">Close` + `</a>` + `</button>` +
+        `<button>` + `<a id="createbutton" type="submit" onclick="createfunction()" href="#">Create</a>`+ `</button>` + `</div>` + `</div>`
         document.getElementById('group-creation-popup').innerHTML = groupCreationPopupinner;
     })
 })
 
-function closefunction(){
-    let groupCreationPopupinner = ``;
-    document.getElementById('group-creation-popup').innerHTML = groupCreationPopupinner;
-}
+
+// function closefunction(){
+//     let groupCreationPopupinner = ``;
+//     document.getElementById('group-creation-popup').innerHTML = groupCreationPopupinner;
+// }
 
 function createfunction(){
     const token = localStorage.getItem("token");
@@ -49,7 +73,7 @@ function createfunction(){
     })
     .then((res)=>{
         let groupCreationPopupinner = ``;
-        document.getElementById('group-creation-popup').innerHTML = groupCreationPopupinner;
+        // document.getElementById('group-creation-popup').innerHTML = groupCreationPopupinner;
         showOnscreenGroups(res.data.groups)
     })
 }
@@ -106,6 +130,7 @@ sendButton.addEventListener('click',(e)=>{
         newLocalStorage.push(newChatData)
         localStorage.setItem('last10',JSON.stringify(newLocalStorage))
         showOnscreenChats()
+        socket.emit('common-chat-send')
     })
 
     // const token = localStorage.getItem('token');
@@ -161,42 +186,70 @@ function showOnscreenChats(){
     document.getElementById('chat-div').innerHTML = chatviewInner;
 }
 
+function openForm(groupId) {
+    document.getElementById("myForm").style.display = "block";
+
+    const checkBoxImage = document.getElementById('isImage');
+    // if(checkBoxImage.checked){
+        let groupChatBox = ``;
+        groupChatBox+=`<input class="choose-file-input" type="file" accept="image/*" id="group-chat-image">`+
+        `<div class="image-send-buttons">` +
+        `<div class="image-send-buttons-subsection">` +
+        `<button class="btn-send" type="submit" id="send-group-message" onclick = "sendmessageAsImage(${groupId})">SEND</button>` +
+        `<button type="button" class="btn cancel" onclick="closeForm()">Close</button>` +
+        `</div>` +
+        `</div>` +
+        `</input>`
+        document.getElementById('image-popup').innerHTML = groupChatBox;
+    // }else{
+    //     let groupChatBox = ``;
+    //     groupChatBox+=`<input type="text" class="chat-input-field" id="group-chat" requires>`+
+    //     `<button type="submit" id="send-group-message" class="chat-send-button" onclick = "sendmessage(${groupId})">SEND</button>`
+    //     document.getElementById('group-chat-box').innerHTML = groupChatBox;
+    // }
+  }
+  
+  function closeForm() {
+    document.getElementById("myForm").style.display = "none";
+  }
 
 function startgroupchat(groupId){
     let groupChatBoxImage =``;
     let groupChatBox = ``;
-    groupChatBoxImage+=`Image: <input type="checkbox" id="isImage" onchange ="showimagebox(${groupId})">`;
-    document.getElementById('group-chat-box-image').innerHTML = groupChatBoxImage;
+    // groupChatBoxImage+=`Image: <input type="checkbox" id="isImage" required onchange ="showimagebox(${groupId})">`;
+    // document.getElementById('group-chat-box-image').innerHTML = groupChatBoxImage;
 
     // const checkBoxImage = document.getElementById('isImage');
     
-
-
-    groupChatBox+=`<input type="text" id="group-chat" requires>`+
-    `<button type="submit" id="send-group-message" onclick = "sendmessage(${groupId},${false})">SEND</button>`
+    groupChatBox+=`<input type="text" required class="chat-input-field" id="group-chat" >`+
+    `<button type="submit" id="send-group-message" class="chat-send-button" onclick = "sendmessage(${groupId},${false})">SEND</button>` +
+    `<button class="image-send-button" class="open-button" onclick="openForm(${groupId})">Image</button>` + `</input>`
     document.getElementById('group-chat-box').innerHTML = groupChatBox;
     
     
 
 }
-function showimagebox(groupId){
-    const checkBoxImage = document.getElementById('isImage');
-    if(checkBoxImage.checked){
-        let groupChatBox = ``;
-        groupChatBox+=`<input type="file" accept="image/*" id="group-chat" requires>`+
-        `<button type="submit" id="send-group-message" onclick = "sendmessage(${groupId},${true})">SEND</button>`
-        document.getElementById('group-chat-box').innerHTML = groupChatBox;
-    }else{
-        let groupChatBox = ``;
-        groupChatBox+=`<input type="text" id="group-chat" requires>`+
-        `<button type="submit" id="send-group-message" onclick = "sendmessage(${groupId},${false})">SEND</button>`
-        document.getElementById('group-chat-box').innerHTML = groupChatBox;
-    }
+// function showimagebox(groupId){
+//     const checkBoxImage = document.getElementById('isImage');
+//     if(checkBoxImage.checked){
+//         let groupChatBox = ``;
+//         groupChatBox+=`<input type="file" accept="image/*" id="group-chat" requires>`+
+//         `<button type="submit" id="send-group-message" onclick = "sendmessageAsImage(${groupId})">SEND</button>`
+//         document.getElementById('group-chat-box').innerHTML = groupChatBox;
+//     }else{
+//         let groupChatBox = ``;
+//         groupChatBox+=`<input type="text" class="chat-input-field" id="group-chat" requires>`+
+//         `<button type="submit" id="send-group-message" class="chat-send-button" onclick = "sendmessage(${groupId})">SEND</button>`
+//         document.getElementById('group-chat-box').innerHTML = groupChatBox;
+//     }
     
-}
+// }
 
 function startgroupchatContent(groupId){
+    console.log("kk")
     const token = localStorage.getItem('token');
+    const userName = localStorage.getItem('userName');
+    console.log(userName)
     const messages = axios.get(`${baseURL}/home/group/getmessage?groupId=${groupId}`,{headers: {"Authentication": token}})
     .then((res)=>{
         let groupChatcontent = ``;
@@ -205,21 +258,37 @@ function startgroupchatContent(groupId){
             const dateString = res.data.content[i].createdAt;
             const date = new Date(dateString);
             const formattedDate = date.toLocaleString("en-US", {
-            timeZone: "Asia/Kolkata",
-            hour12: true,
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-  
+                timeZone: "Asia/Kolkata",
+                hour12: true,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+            });
 
-        const dateOnly = formattedDate.substring(0, 10); 
-        const timeOnly = formattedDate.substring(11);
+            const dateOnly = formattedDate.substring(0, 10); 
+            const timeOnly = formattedDate.substring(11);
         
             // groupChatcontent+=`<li>`+ res.data.content[i].userName + ` -- `+ res.data.content[i].chatcontent +` -- `+ dateOnly + timeOnly+`</ li>`\
-            groupChatcontent+=`<li class="chat-content">`+ `<div class="chat-text">` + `<span>` + res.data.content[i].chatcontent + timeOnly + `<div class="chat-time">` + timeOnly + `</div>` + `</span>` + `<div>` + `</ li>`
+            if(res.data.content[i].userName === userName) {
+                if(res.data.content[i].chatcontent.includes('eu-north-1.amazonaws.com')===true){
+                    const url = JSON.stringify(res.data.content[i].chatcontent);
+                    groupChatcontent+=`<li class="chat-content">` + `<div class="owner-chat-text">` + `<div>` + `</div>` + `<div>` + `<span>` + `<div class="chat-section-container">` + `<div class="chat-name-section">` + `</div>` + `<div class="chat-date-scection">` + dateOnly + `</div>` + `</div>` + `<div class="chat-content-field">` + `<div>` + `<img src = ${url} alt="image">` + `</div>` + `<div class="chat-time">` + timeOnly + `</div>` + `</div>` + `</span>` + `</div>` + `</ li>`
+                }else{
+                    groupChatcontent+=`<li class="chat-content">` + `<div class="owner-chat-text">` + `<div>` + `</div>` + `<div>` + `<span>` + `<div class="chat-section-container">` + `<div class="chat-name-section">` + `</div>` + `<div class="chat-date-scection">` + dateOnly + `</div>` + `</div>` + `<div class="chat-content-field">` + `<div>` + res.data.content[i].chatcontent + `</div>` + `<div class="chat-time">` + timeOnly + `</div>` + `</div>` + `</span>` + `</div>` + `</ li>`
+                }
+               
+
+            } else {
+                if(res.data.content[i].chatcontent.includes('eu-north-1.amazonaws.com')===true){
+                    const url = JSON.stringify(res.data.content[i].chatcontent);
+                    groupChatcontent+=`<li class="chat-content">`+ `<div class="chat-text">` + `<div>` + `<span>` + `<div class="chat-section-container">` + `<div class="chat-name-section">` + res.data.content[i].userName + `</div>` + `<div class="chat-date-scection">` + dateOnly + `</div>` + `</div>` + `<div class="chat-content-field">` + `<div>` + `<img src = ${url} alt="image">`+ `</div>` + `<div class="chat-time">` + timeOnly + `</div>` + `</div>` + `</span>` + `</div>` + `<div>` + `</ li>`
+                }else{
+                    groupChatcontent+=`<li class="chat-content">`+ `<div class="chat-text">` + `<div>` + `<span>` + `<div class="chat-section-container">` + `<div class="chat-name-section">` + res.data.content[i].userName + `</div>` + `<div class="chat-date-scection">` + dateOnly + `</div>` + `</div>` + `<div class="chat-content-field">` + `<div>` + res.data.content[i].chatcontent + `</div>` + `<div class="chat-time">` + timeOnly + `</div>` + `</div>` + `</span>` + `</div>` + `<div>` + `</ li>`
+                }
+                
+            }
         }
         document.getElementById('group-chat-message').innerHTML = groupChatcontent;
         let groupChatTitle = ``;
@@ -227,17 +296,38 @@ function startgroupchatContent(groupId){
         document.getElementById('group-chat-title').innerHTML = groupChatTitle;
         
     })
+    closeEditfunction()
     
 }
 
-function sendmessage(groupId,isImage){
-    const groupChatContent = document.getElementById('group-chat').value
+function sendmessage(groupId){
+    const groupChatContent = document.getElementById('group-chat').value;
+    if(document.getElementById('group-chat').value === ""){
+        alert("Please Enter some message");
+    }else{
+        const token = localStorage.getItem('token');
+        axios.post(`${baseURL}/home/group/sendmessage`,{groupId: groupId,content: groupChatContent},{headers: {"Authentication": token}})
+        .then((res)=>{
+            startgroupchatContent(res.data.groupId)
+            const groupChatContent = document.getElementById('group-chat').value = ""
+            socket.emit('group-chat-send',groupId)
+        })
+    }
+   
+}
+
+
+
+async function sendmessageAsImage(groupId){
     const token = localStorage.getItem('token');
-    axios.post(`${baseURL}/home/group/sendmessage`,{groupId: groupId,content: groupChatContent,isImage:isImage},{headers: {"Authentication": token}})
-    .then((res)=>{
-        startgroupchatContent(res.data.groupId)
-        const groupChatContent = document.getElementById('group-chat').value = ""
-    })
+    const file = document.getElementById('group-chat-image').files[0];
+    const formData = new FormData();
+    formData.append('image',file);
+    formData.append('groupId',groupId)
+    console.log(formData)
+    await axios.post(`${baseURL}/home/group/sendimage`,formData ,{headers: {"Authentication": token}})
+    .then((res)=>startgroupchatContent(groupId))
+    socket.emit('group-chat-send',groupId)
 }
 
 
@@ -265,6 +355,7 @@ async function editGroup(groupId){
             document.getElementById('group-chat-edit').innerHTML = groupEditPopupinner;
             
         })
+        
     
         
 })
@@ -282,6 +373,8 @@ function updateFunction(groupId,length){
     const uncheckedUsers = uncheckedUser(length);
     axios.post(`${baseURL}/home/group/edit`,{groupId:groupId,groupname:groupname,checkedUsers:checkedUsers,unchecked: uncheckedUsers},{headers: {"Authentication":token}})
     .then((res)=>{
+        closeEditfunction()
+        startgroupchatContent(groupId)
         alert(res.data.message)
     })
 }
