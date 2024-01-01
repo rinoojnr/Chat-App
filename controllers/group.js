@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const Op = require('sequelize');
 const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
-dotenv.config();
+
 
 const User = require('../models/signup');
 const Groups = require('../models/group');
@@ -12,6 +12,9 @@ const Content = require('../models/content');
 const GroupChat = require('../models/groupchat');
 const s3Service = require('../services/s3service');
 
+dotenv.config();
+
+//GET ALL USERS FOR CREATING GROUP
 exports.getUsers = async(req,res) =>{
     const id = req.user.id
     const user = await User.findAll({where: {id: {
@@ -24,7 +27,7 @@ exports.getUsers = async(req,res) =>{
   res.status(200).json({success:true,message:"group created",users: users})  
 }
 
-
+//CREATE GROUP
 exports.createGroup = async(req,res) =>{
     const grp = await Groups.create({
         groupname: req.body.groupname,owner:req.user.id
@@ -47,7 +50,7 @@ exports.createGroup = async(req,res) =>{
 }
 
 
-
+//TO GET THE USERS GROUPS
 async function myGroups(id){
     const groupsIncluded = await GroupMember.findAll({where: {userId: id}});
     const groupsIncludedName = [];
@@ -59,7 +62,7 @@ async function myGroups(id){
     return (groupsIncludedName)
 }
 
-
+//SEND GROUP MESSAGES
 exports.sendGroupMessage = async(req,res) => {
         let grpMember = await GroupMember.findOne({where: {userId: req.user.id, groupId: req.body.groupId}})
         let content = await Content.create({
@@ -72,7 +75,7 @@ exports.sendGroupMessage = async(req,res) => {
         })
         res.json({success:true,message:"message sent",groupId:req.body.groupId})
     }
-
+//SEND GROUPIMAGES
 exports.sendGroupImage = async(req,res) =>{
     let grpMember = await GroupMember.findOne({where: {userId: req.user.id, groupId: req.body.groupId}})
 
@@ -99,7 +102,7 @@ exports.sendGroupImage = async(req,res) =>{
 
         
 
-
+//GET GROUPMESSAGES
 exports.getGroupMessage = async(req,res) => {
     let grpMessages =await GroupChat.findAll({where: {groupId: req.query.groupId}})
     const messages = [];
@@ -115,6 +118,8 @@ exports.getGroupMessage = async(req,res) => {
     res.json({success:true,message:"message get",content:messages,groupName: groupName.groupname,groupMembersLength: grpMemberLength})
 }
 
+
+//EDIT GROUPMESSAGES
 exports.editGroup = async(req,res) =>{
     const group = await Groups.findOne({where: {id: req.body.groupId},attributes: ['owner']});
     if(req.user.id != group.owner){
@@ -160,7 +165,7 @@ exports.editGroup = async(req,res) =>{
     }
 }
 
-
+//GET ALL GROUPMEMBERS FOR EDITING PURPOSE
 exports.getGroupInfo = async (req,res) =>{
     const GroupInfo = await Groups.findOne({
         where: {

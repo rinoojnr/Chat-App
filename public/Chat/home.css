@@ -79,13 +79,21 @@ body {
 
 }
 
+.chat-container {
+    height: 100%;
+}
+
 .chat-container-header {
     height: 10%;
     background-color: rgb(211, 202, 202);
 }
 
 .chat-body {
-    height: 90%;
+    height: 83%;
+}
+
+.common-chat-typing-container {
+    height: 7%;
 }
 
 .chat-title-section {
@@ -105,6 +113,15 @@ body {
     width: 20%;
     height: 30%;
     margin: auto;
+    display: flex;
+}
+
+.edit-groups {
+    height: 100%;
+    margin: auto;
+    border: none;
+    border-radius: 10px;
+    width: 80%;
 }
 
 .chat-title {
@@ -185,7 +202,7 @@ body {
 }
 
 .message-container {
-    height: 87%;
+    /* height: 87%; */
 }
 
 .chat-conten-fieldt {
@@ -196,7 +213,7 @@ body {
 
 .group-chat-box {
     display: flex;
-    height: 60%;
+    height: 100%;
     border-radius: 10px;
 }
 
@@ -211,7 +228,7 @@ body {
 }
 
 .chat-typing-container {
-    height: 13%;
+    height: 10%;
 }
 
 .group-chat-box-image {
@@ -285,10 +302,22 @@ a {
     flex-direction: column;
 }
 
+.joined-names-subsection {
+    text-align: center;
+    color: gray
+}
 
+.chat-names-container {
+    /* height: 90%; */
+}
 
-
-
+.edit-button-section {
+    height: 100%;
+    margin: auto;
+    border: none;
+    border-radius: 10px;
+    width: 80%;
+}
 
 
 .open-button {
@@ -312,7 +341,8 @@ a {
     /* right: 15px; */
     border: 3px solid #f1f1f1;
     z-index: 9;
-    left: 860px
+    left: 1430px;
+    /* bottom: 50px; */
   }
   
   /* Add styles to the form container */

@@ -24,58 +24,45 @@ exports.job = new CronJob(
 
 
 async function archivedFunction(){
-    const date = new Date();
-    let _5daysBefore = new Date();
-    _5daysBefore.setDate(date.getDate() - 5);
+    try{
+        const date = new Date();
+        let _5daysBefore = new Date();
+        _5daysBefore.setDate(date.getDate() - 5);
 
 
-    const Contents = await Content.findAll({
-        where: {
-            createdAt: {
-                [Sequelize.Op.lt]:_5daysBefore
-            } 
-        }
-    })
-
-
-    for(let i=0;i<Contents.length;i++){ 
-        const GroupChats = await GroupChat.findOne({
+        const Contents = await Content.findAll({
             where: {
-                contentId: Contents[i].id
+                createdAt: {
+                    [Sequelize.Op.lt]:_5daysBefore
+                } 
             }
-        });
-        if(GroupChats == null){
-            continue;
-        }
-        const GroupMembers = await GroupMember.findOne({
-            where: {
-                id: GroupChats.groupmemberId
-            }
-        });
-        await Archived.create({
-            chatcontent: Contents[i].chatcontent,
-            groupId: GroupChats.groupId,
-            groupmemberId:  GroupChats.groupmemberId,
-            userId: GroupMembers.userId
         })
+
+
+        for(let i=0;i<Contents.length;i++){ 
+            const GroupChats = await GroupChat.findOne({
+                where: {
+                    contentId: Contents[i].id
+                }
+            });
+            if(GroupChats == null){
+                continue;
+            }
+            const GroupMembers = await GroupMember.findOne({
+                where: {
+                    id: GroupChats.groupmemberId
+                }
+            });
+            await Archived.create({
+                chatcontent: Contents[i].chatcontent,
+                groupId: GroupChats.groupId,
+                groupmemberId:  GroupChats.groupmemberId,
+                userId: GroupMembers.userId
+            })
+        }
+    }catch(err){
+        console.log(err)
     }
-
-    // await GroupChat.destroy({
-    //     where: {
-    //         createdAt: {
-    //             [Sequelize.Op.lt]:_5daysBefore
-    //         } 
-    //     }
-    // })
-
-    // await Content.destroy({
-    //     where: {
-    //         createdAt: {
-    //             [Sequelize.Op.lt]:_5daysBefore
-    //         } 
-    //     }
-    // })
-
 }
 
 

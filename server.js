@@ -21,3 +21,5 @@ const socketService = (socket) => {
         socket.broadcast.emit('group-message',groupId);
     })
   }
+
+module.exports = socketService
